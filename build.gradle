@@ -1,0 +1,40 @@
+apply plugin: 'java'
+
+def name = 'EquilinoxModdingFramework'
+def gameVersion = '1.0.7' // Version of the Equilinox for which the framework is build.
+def frameworkVersion = '1.0.0.19' // Current version of the framework.
+
+dependencies {
+    // Use JUnit test framework
+    testImplementation 'junit:junit:4.12'
+}
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    // Use jcenter for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    jcenter()
+}
+
+compileJava {
+    options.debug = true
+}
+
+jar {
+    archiveName = "${name}-${gameVersion}-${frameworkVersion}.jar"
+    manifest {
+        attributes(
+        		'Main-Class': 'kd.equilinox.core.Main',
+                'Premain-Class': 'kd.equilinox.agent.EquilinoxAgent',
+                'Agent-Class': 'kd.equilinox.agent.EquilinoxAgent',
+                'Can-Redefine-Classes': 'true',
+                'Can-Retransform-Classes': 'true',
+                'Can-Set-Native-Method-Prefix': 'true',
+                'Implementation-Title': "Equilinox Modding Framework",
+                'Implementation-Version': rootProject.version,
+                'Built-By': System.getProperty('user.name'),
+                'Built-Date': new Date(),
+                'Built-JDK': System.getProperty('java.version')
+        )
+    }
+}

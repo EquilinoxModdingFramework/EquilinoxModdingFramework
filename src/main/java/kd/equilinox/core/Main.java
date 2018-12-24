@@ -2,24 +2,19 @@ package kd.equilinox.core;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
+import kd.equilinox.utils.FileUtils;
 import kd.equilinox.utils.Logger;
 
 /**
- * 
  * Start point of the framework which is responsible for running game with
  * custom agent.
  * 
  * @author Krzysztof Dobrzynski - k.dobrzynski94@gmail.com
- *
  */
 public class Main {
 	public static void main(String[] args) {
@@ -32,12 +27,14 @@ public class Main {
 
 		try {
 			Logger.info("Starting game...");
-			Process gameProcess = Runtime.getRuntime().exec(command, null, null);
+			Runtime.getRuntime().exec(command, null, null);
 			Logger.info("Game started.");
-
-			System.setOut(new PrintStream(gameProcess.getOutputStream()));
-		} catch (IOException e) {
-			handleError(e);
+		} catch (IOException exception) {
+			try {
+				FileUtils.handleCrash(exception);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -70,23 +67,5 @@ public class Main {
 		}
 
 		return false;
-	}
-
-	private static void handleError(IOException exception) {
-		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd-HH-mm-ss");
-		Date date = new Date();
-		String dateFormatted = dateFormat.format(date);
-
-		File errorFile = new File("EMF-crash-" + dateFormatted + ".txt");
-
-		try {
-			if (!errorFile.exists()) {
-				errorFile.createNewFile();
-			}
-			PrintStream ps = new PrintStream(errorFile);
-			exception.printStackTrace(ps);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 	}
 }

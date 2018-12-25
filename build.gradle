@@ -1,10 +1,14 @@
 apply plugin: 'java'
+apply plugin: 'eclipse'
 
 def name = 'EquilinoxModdingFramework'
 def gameVersion = '1.0.7' // Version of the Equilinox for which the framework is build.
 def frameworkVersion = '1.0.0' // Current version of the framework.
 
 dependencies {
+	// Javassist
+	compile 'org.javassist:javassist:3.24.1-GA' // For building
+	
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
 }
@@ -22,6 +26,10 @@ compileJava {
 
 jar {
     archiveName = "${name}-${gameVersion}-${frameworkVersion}.jar"
+    
+    // Include all deps into JAR
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
+    
     manifest {
         attributes(
         		'Main-Class': 'kd.equilinox.core.Main',

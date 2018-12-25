@@ -18,6 +18,9 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import kd.equilinox.events.InitializationEvent;
+import kd.equilinox.events.PostInitializationEvent;
+import kd.equilinox.events.PreInitializationEvent;
 import kd.equilinox.mods.IMod;
 import kd.equilinox.utils.FileUtils;
 import kd.equilinox.utils.Logger;
@@ -29,6 +32,11 @@ import kd.equilinox.utils.Logger;
  * @author Krzysztof Dobrzynski - k.dobrzynski94@gmail.com
  */
 public class ModLoader implements IModLoader {
+	/**
+	 * Instance of current Mod Loader.
+	 */
+	public static final IModLoader INSTANCE = new ModLoader();
+
 	/**
 	 * A set of JAR files found in mods folder. NOTE: They don't need to be all
 	 * mods.
@@ -48,6 +56,9 @@ public class ModLoader implements IModLoader {
 	 * Holds an information about currently loaded mods.
 	 */
 	private Set<IMod> mods = new HashSet<>();
+
+	private ModLoader() {
+	}
 
 	public void scanForModFiles() {
 		Path modsFolder = Paths.get(FileUtils.MODS_DIR);
@@ -80,15 +91,15 @@ public class ModLoader implements IModLoader {
 						continue;
 					}
 
-					if (modClass.isAssignableFrom(ClassFileTransformer.class)
-							|| !Modifier.isAbstract(modClass.getModifiers())) {
-						this.classTransformers.add(modClass);
-						Logger.info("Found ClassFileTransformer: " + modClass.getName());
-					}
-
-					if (modClass.isAssignableFrom(IMod.class) || !Modifier.isAbstract(modClass.getModifiers())) {
+					if (IMod.class.isAssignableFrom(modClass) && !Modifier.isAbstract(modClass.getModifiers())) {
 						this.modCoreClasses.add(modClass);
 						Logger.info("Found IMod class: " + modClass.getName());
+					}
+
+					if (ClassFileTransformer.class.isAssignableFrom(modClass)
+							&& !Modifier.isAbstract(modClass.getModifiers())) {
+						this.classTransformers.add(modClass);
+						Logger.info("Found ClassFileTransformer: " + modClass.getName());
 					}
 				}
 			}
@@ -96,8 +107,8 @@ public class ModLoader implements IModLoader {
 			Logger.error(ex);
 		}
 
-		Logger.info("Total found ClassFileTransformer: " + this.classTransformers.size());
-		Logger.info("Total found mods: " + this.mods.size());
+		Logger.info("Total found class transformers: " + this.classTransformers.size());
+		Logger.info("Total found IMod classes: " + this.modCoreClasses.size());
 	}
 
 	public void loadClassTransformers(Instrumentation instrumentation) {
@@ -119,30 +130,39 @@ public class ModLoader implements IModLoader {
 				this.mods.add(modCoreClass);
 				Logger.info("Found mod: " + modCoreClass.getModName());
 			}
-
-			Logger.info("Entering preinitialization stage...");
-			for (IMod mod : this.mods) {
-				Logger.info("Loading mod: " + mod.getModName());
-				mod.preInit(this);
-			}
-
-			Logger.info("Entering initialization stage...");
-			for (IMod mod : this.mods) {
-				Logger.info("Loading mod: " + mod.getModName());
-				mod.init(this);
-			}
-
-			Logger.info("Entering postinitialization stage...");
-			for (IMod mod : this.mods) {
-				Logger.info("Loading mod: " + mod.getModName());
-				mod.postInit(this);
-			}
 		} catch (Exception ex) {
 			Logger.error(ex);
 		}
 	}
 
-	private Collection<JarEntry> getJarEntries(JarFile jarFile) {
+	public void runPreInitialization() {
+		Logger.info("Entering preinitialization stage...");
+		for (IMod mod : this.mods) {
+			Logger.info("Loading mod: " + mod.getModName());
+			PreInitializationEvent event = new PreInitializationEvent();
+			mod.preInit(event);
+		}
+	}
+
+	public void runInitialization() {
+		Logger.info("Entering initialization stage...");
+		for (IMod mod : this.mods) {
+			Logger.info("Loading mod: " + mod.getModName());
+			InitializationEvent event = new InitializationEvent();
+			mod.init(event);
+		}
+	}
+
+	public void runPostInitialization() {
+		Logger.info("Entering postinitialization stage...");
+		for (IMod mod : this.mods) {
+			Logger.info("Loading mod: " + mod.getModName());
+			PostInitializationEvent event = new PostInitializationEvent();
+			mod.postInit(event);
+		}
+	}
+
+	public Collection<JarEntry> getJarEntries(JarFile jarFile) {
 		Collection<JarEntry> jarEntries = new HashSet<>();
 		Enumeration<JarEntry> entries = jarFile.entries();
 
@@ -154,14 +174,13 @@ public class ModLoader implements IModLoader {
 		return jarEntries;
 	}
 
-	private URLClassLoader getUrlClassLoader(File file) throws MalformedURLException {
-		URL[] urls = { new URL("jar:file:" + file.getAbsolutePath() + "!/"),
-				new URL("jar:" + file.getAbsolutePath() + "!/") };
+	public URLClassLoader getUrlClassLoader(File file) throws MalformedURLException {
+		URL[] urls = { new URL("jar:file:" + file.getAbsolutePath() + "!/") };
 		URLClassLoader urlClassLoader = URLClassLoader.newInstance(urls);
 		return urlClassLoader;
 	}
 
-	private Class<?> loadClass(URLClassLoader urlClassLoader, JarEntry entry) throws ClassNotFoundException {
+	public Class<?> loadClass(URLClassLoader urlClassLoader, JarEntry entry) throws ClassNotFoundException {
 		if (!entry.getName().endsWith(".class")) {
 			return null;
 		}

@@ -6,9 +6,6 @@ def gameVersion = '1.0.7' // Version of the Equilinox for which the framework is
 def frameworkVersion = '1.0.0' // Current version of the framework.
 
 dependencies {
-	// Javassist
-	compile 'org.javassist:javassist:3.24.1-GA' // For building
-	
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
 }

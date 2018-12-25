@@ -2,7 +2,6 @@ package kd.equilinox.agent;
 
 import java.lang.instrument.Instrumentation;
 
-import kd.equilinox.codeinjector.EquilinoxCodeInjector;
 import kd.equilinox.modloader.ModLoader;
 import kd.equilinox.utils.Logger;
 
@@ -17,8 +16,6 @@ public class EquilinoxAgent {
 
 		runModLoader(instrumentation);
 
-		loadCodeInjector(instrumentation);
-
 		Logger.info("Work done.");
 	}
 
@@ -28,7 +25,7 @@ public class EquilinoxAgent {
 		Logger.info("Scanning for mod files...");
 		ModLoader.INSTANCE.scanForModFiles();
 
-		Logger.info("Scanning found JARs...");
+		Logger.info("Scanning JARs...");
 		ModLoader.INSTANCE.scanJars();
 
 		Logger.info("Loading class transformers...");
@@ -36,14 +33,10 @@ public class EquilinoxAgent {
 
 		Logger.info("Loading mods...");
 		ModLoader.INSTANCE.loadMods();
-	}
 
-	private static void loadCodeInjector(Instrumentation instrumentation) {
-		Logger.info("Loading code injector...");
-
-		EquilinoxCodeInjector codeInjector = new EquilinoxCodeInjector();
-		codeInjector.run();
-
-		Logger.info("Code injected.");
+		Logger.info("Starting mods initialization...");
+		ModLoader.INSTANCE.runPreInitialization();
+		ModLoader.INSTANCE.runInitialization();
+		ModLoader.INSTANCE.runPostInitialization();
 	}
 }

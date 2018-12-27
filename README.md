@@ -15,7 +15,7 @@ Copy repository into your local directory:
 
 Than build it:
 
-```gradlew build```
+```gradlew build --refresh-dependencies```
 
 In 'build / libs' folder you will have a new JAR file:
 

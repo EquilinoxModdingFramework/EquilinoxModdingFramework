@@ -1,12 +1,8 @@
 package kd.equilinox.core;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
+import kd.equilinox.core.patches.GamePatcher;
 import kd.equilinox.utils.FileUtils;
 import kd.equilinox.utils.Logger;
 
@@ -17,55 +13,50 @@ import kd.equilinox.utils.Logger;
  * @author Krzysztof Dobrzynski - k.dobrzynski94@gmail.com
  */
 public class Main {
+	private static File FRAMEWORK_FILE;
+	private static File GAME_FILE;
+	private static String RUN_GAME_COMMAND;
+
 	public static void main(String[] args) {
-		File frameworkFile = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-		String fileName = frameworkFile.getName();
-		String gameFileName = getGameFileName();
-		String command = "java -javaagent:" + fileName + " -jar " + gameFileName;
+		findFiles();
+		backupGameFile();
+		patchGame();
+		buildRunCommand();
+		startGame();
+	}
 
-		Logger.info(command);
+	private static void findFiles() {
+		FRAMEWORK_FILE = FileUtils.getFrameworkFile();
+		Logger.info("Found framework file at: " + FRAMEWORK_FILE.getAbsolutePath());
 
-		try {
-			Logger.info("Starting game...");
-			Runtime.getRuntime().exec(command, null, null);
-			Logger.info("Game started.");
-		} catch (IOException exception) {
-			try {
-				FileUtils.handleCrash(exception);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		GAME_FILE = FileUtils.getGameFile();
+		Logger.info("Found game file at: " + GAME_FILE.getAbsolutePath());
+	}
+
+	private static void backupGameFile() {
+		if (!FileUtils.backupFile(GAME_FILE)) {
+			Logger.error("Cannot create backup file.");
+			Logger.error("Exiting...");
 		}
 	}
 
-	private static String getGameFileName() {
-		Path currentDir = Paths.get(System.getProperty("user.dir"));
-		try (DirectoryStream<Path> stream = Files.newDirectoryStream(currentDir)) {
-			File gameFile = null;
-			for (Path file : stream) {
-				gameFile = file.toFile();
-				if (isGameFile(gameFile)) {
-					return gameFile.getName();
-				}
-			}
-		} catch (Exception x) {
-			System.err.println(x);
-		}
-		throw new IllegalArgumentException("Cannot find Equilinox game JAR file.");
+	private static void patchGame() {
+		GamePatcher patcher = new GamePatcher(FRAMEWORK_FILE, GAME_FILE);
+		patcher.run();
 	}
 
-	private static boolean isGameFile(File file) {
-		if (!file.isFile()) {
-			return false;
-		}
+	private static void buildRunCommand() {
+		RUN_GAME_COMMAND = "java -jar " + GAME_FILE.getName();
+		Logger.info("Command: '" + RUN_GAME_COMMAND + "'");
+	}
 
-		String fileName = file.getName();
-
-		// EMF will contains "-" in it's name and will also end with ".jar".
-		if (fileName.endsWith(".jar") && !fileName.contains("-") && fileName.contains("Equilinox")) {
-			return true;
-		}
-
-		return false;
+	private static void startGame() {
+		Logger.info("Starting game...");
+//		try {
+//			Runtime.getRuntime().exec(RUN_GAME_COMMAND, null, null);
+//		} catch (IOException exception) {
+//			Logger.error(exception);
+//		}
+		Logger.info("Game started.");
 	}
 }

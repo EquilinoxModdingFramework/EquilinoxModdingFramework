@@ -1,8 +1,6 @@
 package kd.equilinox.modloader;
 
 import java.io.File;
-import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -43,11 +41,6 @@ public class ModLoader implements IModLoader {
 	 */
 	private Set<File> jarFiles = new HashSet<>();
 	/**
-	 * Holds an information about custom class transformers. Classes which
-	 * implements {@link ClassFileTransformer}.
-	 */
-	private Set<Class<?>> classTransformers = new HashSet<>();
-	/**
 	 * Holds an information about mods core classes. Classes which implements
 	 * {@link IMod}.
 	 */
@@ -58,6 +51,19 @@ public class ModLoader implements IModLoader {
 	private Set<IMod> mods = new HashSet<>();
 
 	private ModLoader() {
+		Logger.info("Stating ModLoader...");
+
+		Logger.info("Scanning for mod files...");
+		this.scanForModFiles();
+
+		Logger.info("Scanning JARs...");
+		this.scanJars();
+
+		Logger.info("Loading mods...");
+		this.loadMods();
+
+		Logger.info("Starting mods initialization...");
+		this.runPreInitialization();
 	}
 
 	public void scanForModFiles() {
@@ -95,31 +101,13 @@ public class ModLoader implements IModLoader {
 						this.modCoreClasses.add(modClass);
 						Logger.info("Found IMod class: " + modClass.getName());
 					}
-
-					if (ClassFileTransformer.class.isAssignableFrom(modClass)
-							&& !Modifier.isAbstract(modClass.getModifiers())) {
-						this.classTransformers.add(modClass);
-						Logger.info("Found ClassFileTransformer: " + modClass.getName());
-					}
 				}
 			}
 		} catch (Exception ex) {
 			Logger.error(ex);
 		}
 
-		Logger.info("Total found class transformers: " + this.classTransformers.size());
 		Logger.info("Total found IMod classes: " + this.modCoreClasses.size());
-	}
-
-	public void loadClassTransformers(Instrumentation instrumentation) {
-		try {
-			for (Class<?> modClass : this.classTransformers) {
-				ClassFileTransformer modTransformer = (ClassFileTransformer) modClass.newInstance();
-				instrumentation.addTransformer(modTransformer);
-			}
-		} catch (Exception ex) {
-			Logger.error(ex);
-		}
 	}
 
 	public void loadMods() {

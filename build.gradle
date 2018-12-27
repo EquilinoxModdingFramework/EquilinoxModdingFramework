@@ -3,9 +3,13 @@ apply plugin: 'eclipse'
 
 def name = 'EquilinoxModdingFramework'
 def gameVersion = '1.0.7' // Version of the Equilinox for which the framework is build.
-def frameworkVersion = '1.0.0' // Current version of the framework.
+def frameworkVersion = '1.1.0' // Current version of the framework.
+def version = "${gameVersion}-${frameworkVersion}";
 
 dependencies {
+	// Used for patching the game.
+	compile 'org.javassist:javassist:3.24.1-GA'
+
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
 }
@@ -17,21 +21,17 @@ repositories {
     jcenter()
 }
 
-compileJava {
-    options.debug = true
-}
-
 jar {
-    archiveName = "${name}-${gameVersion}-${frameworkVersion}.jar"
+    archiveName = "${name}-" + version + ".jar"
     
     // Include all deps into JAR
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }}
     
     manifest {
         attributes(
+        		'Agent-Class': 'kd.equilinox.agent.EquilinoxAgent',
+        		'Premain-Class': 'kd.equilinox.agent.EquilinoxAgent',
         		'Main-Class': 'kd.equilinox.core.Main',
-                'Premain-Class': 'kd.equilinox.agent.EquilinoxAgent',
-                'Agent-Class': 'kd.equilinox.agent.EquilinoxAgent',
                 'Can-Redefine-Classes': 'true',
                 'Can-Retransform-Classes': 'true',
                 'Can-Set-Native-Method-Prefix': 'true',

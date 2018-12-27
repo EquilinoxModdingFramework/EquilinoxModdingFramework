@@ -1,0 +1,11 @@
+// Contains patches required by Equilinox Modding Framework
+// Patches should be as small as possible and should mainly execute some external code.
+
+// Template for patch:
+// # class | method | A - After / B - Before | code 
+// After - include the code at the end of the method (after all the method body)
+// Before - include the code at the start fo the method (before the actual method body)
+
+
+# main/MainApp.class | main | B | { kd.equilinox.modloader.ModLoader.INSTANCE.runInitialization(); }
+# gameManaging/GameManager.class | init | A | { kd.equilinox.modloader.ModLoader.INSTANCE.runPostInitialization(); }

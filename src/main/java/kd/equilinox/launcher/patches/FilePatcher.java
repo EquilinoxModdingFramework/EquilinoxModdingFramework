@@ -78,6 +78,8 @@ public class FilePatcher {
 
 	private byte[] patchClass(InputStream stream, Patch patch) throws Exception {
 		ClassPool pool = ClassPool.getDefault();
+		pool.insertClassPath(this.gameFile.getName());
+		
 		CtClass clazz = pool.makeClass(stream);
 
 		CtMethod method = clazz.getDeclaredMethod(patch.methodToPatch);

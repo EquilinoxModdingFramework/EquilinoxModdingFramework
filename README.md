@@ -29,3 +29,18 @@ Go to 'Release' section and download latest stable version.
 
 Equilinox Modding Framework will try to find Equilinox JAR file and do all the magic once copied next to Equilinox JAR file. 
 For instance copy it next to EquilinixWindows.jar for Windows.
+
+### 4. Execute file.
+
+When you run the EquilinoxModdingFramework-X.X.X-X.X.X.X.jar file it will create you a new (patched) file.
+The work will be done when the file with " - Patched" in name is created.
+
+### 5. Does it work ?
+
+If you want to make sure that everything is alright, go to "EMF / logs" and check the log file for more details.
+If everything is ok, the error log file should be empty. 
+Also the popup will show, indicating that the work has been done.
+
+### 6. Play.
+
+If everything was patched without any errors, now you are ready to go and play. Just run patched JAR file and play with your favourite mods.

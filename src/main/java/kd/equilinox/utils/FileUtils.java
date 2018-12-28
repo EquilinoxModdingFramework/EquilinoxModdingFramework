@@ -10,6 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import javax.swing.JOptionPane;
+
 /**
  * Contains various methods for File manipulation.
  * 
@@ -93,6 +95,8 @@ public final class FileUtils {
 		} catch (Exception x) {
 			System.err.println(x);
 		}
+		JOptionPane.showMessageDialog(null, "Cannot find Equilinox game JAR file.", "Equilinox Modding Framework",
+				JOptionPane.INFORMATION_MESSAGE);
 		throw new IllegalArgumentException("Cannot find Equilinox game JAR file.");
 	}
 

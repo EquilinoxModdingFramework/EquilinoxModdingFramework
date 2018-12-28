@@ -1,4 +1,4 @@
-package kd.equilinox.core.patches;
+package kd.equilinox.launcher.patches;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

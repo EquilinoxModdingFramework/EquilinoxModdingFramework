@@ -11,6 +11,7 @@ public final class Logger {
 
 	static {
 		FileUtils.prepareFiles();
+		printFrameworkDetails();
 	}
 
 	public static void info(String message) {
@@ -23,5 +24,15 @@ public final class Logger {
 
 	public static void error(Exception exception) {
 		exception.printStackTrace(System.err);
+	}
+
+	private static void printFrameworkDetails() {
+		info("|************************************************************************|");
+		info("|                                                                        |");
+		info("|               Equilinox Modding Framework  by  Sejoslaw                |");
+		info("|                                                                        |");
+		info("| https://github.com/EquilinoxModdingFramework/EquilinoxModdingFramework |");
+		info("|                                                                        |");
+		info("|************************************************************************|");
 	}
 }

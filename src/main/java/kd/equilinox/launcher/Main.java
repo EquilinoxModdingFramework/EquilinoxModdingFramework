@@ -1,8 +1,10 @@
-package kd.equilinox.core;
+package kd.equilinox.launcher;
 
 import java.io.File;
 
-import kd.equilinox.core.patches.GamePatcher;
+import javax.swing.JOptionPane;
+
+import kd.equilinox.launcher.patches.GamePatcher;
 import kd.equilinox.utils.FileUtils;
 import kd.equilinox.utils.Logger;
 
@@ -15,14 +17,12 @@ import kd.equilinox.utils.Logger;
 public class Main {
 	private static File FRAMEWORK_FILE;
 	private static File GAME_FILE;
-	private static String RUN_GAME_COMMAND;
 
 	public static void main(String[] args) {
 		findFiles();
 		backupGameFile();
 		patchGame();
-		buildRunCommand();
-		startGame();
+		exitLauncher();
 	}
 
 	private static void findFiles() {
@@ -45,18 +45,8 @@ public class Main {
 		patcher.run();
 	}
 
-	private static void buildRunCommand() {
-		RUN_GAME_COMMAND = "java -jar " + GAME_FILE.getName();
-		Logger.info("Command: '" + RUN_GAME_COMMAND + "'");
-	}
-
-	private static void startGame() {
-		Logger.info("Starting game...");
-//		try {
-//			Runtime.getRuntime().exec(RUN_GAME_COMMAND, null, null);
-//		} catch (IOException exception) {
-//			Logger.error(exception);
-//		}
-		Logger.info("Game started.");
+	private static void exitLauncher() {
+		JOptionPane.showMessageDialog(null, "Game patched successfully.", "Equilinox Modding Framework",
+				JOptionPane.INFORMATION_MESSAGE);
 	}
 }

@@ -1,4 +1,4 @@
-package kd.equilinox.core.patches;
+package kd.equilinox.launcher.patches;
 
 /**
  * @author Krzysztof Dobrzynski - k.dobrzynski94@gmail.com

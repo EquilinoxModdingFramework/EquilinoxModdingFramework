@@ -29,9 +29,7 @@ jar {
     
     manifest {
         attributes(
-        		'Agent-Class': 'kd.equilinox.agent.EquilinoxAgent',
-        		'Premain-Class': 'kd.equilinox.agent.EquilinoxAgent',
-        		'Main-Class': 'kd.equilinox.core.Main',
+        		'Main-Class': 'kd.equilinox.launcher.Main',
                 'Can-Redefine-Classes': 'true',
                 'Can-Retransform-Classes': 'true',
                 'Can-Set-Native-Method-Prefix': 'true',

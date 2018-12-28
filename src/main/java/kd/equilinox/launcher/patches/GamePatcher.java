@@ -1,4 +1,4 @@
-package kd.equilinox.core.patches;
+package kd.equilinox.launcher.patches;
 
 import java.io.BufferedReader;
 import java.io.File;

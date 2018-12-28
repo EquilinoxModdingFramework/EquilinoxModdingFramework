@@ -80,6 +80,10 @@ public class GamePatcher {
 		patch.patchPlace = PatchPlace.getById(trim(patchParts[2]));
 		patch.codeToInject = patchParts[3];
 
+		if (patchParts.length > 4) {
+			patch.methodParameters = trim(patchParts[4]).split(",");
+		}
+
 		return patch;
 	}
 

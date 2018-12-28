@@ -19,5 +19,5 @@ public interface IModLoader {
 
 	public void runPostInitialization();
 
-	public void runPostLoadSession();
+	public void runPostLoadSession(Object session);
 }

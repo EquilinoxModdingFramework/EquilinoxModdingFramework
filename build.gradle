@@ -1,9 +1,8 @@
 apply plugin: 'java'
-apply plugin: 'eclipse'
 
 def name = 'EquilinoxModdingFramework'
 def gameVersion = '1.0.7' // Version of the Equilinox for which the framework is build.
-def frameworkVersion = '1.2.3' // Current version of the framework.
+def frameworkVersion = '1.2.5' // Current version of the framework.
 def version = "${gameVersion}-${frameworkVersion}";
 
 dependencies {

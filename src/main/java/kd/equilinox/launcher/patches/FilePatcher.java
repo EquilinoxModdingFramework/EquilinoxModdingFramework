@@ -3,6 +3,7 @@ package kd.equilinox.launcher.patches;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.jar.JarFile;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
+import javassist.NotFoundException;
 import kd.equilinox.utils.Logger;
 
 /**
@@ -79,10 +81,10 @@ public class FilePatcher {
 	private byte[] patchClass(InputStream stream, Patch patch) throws Exception {
 		ClassPool pool = ClassPool.getDefault();
 		pool.insertClassPath(this.gameFile.getName());
-		
+
 		CtClass clazz = pool.makeClass(stream);
 
-		CtMethod method = clazz.getDeclaredMethod(patch.methodToPatch);
+		CtMethod method = this.findMethod(clazz, patch);
 
 		if (patch.patchPlace == PatchPlace.Before) {
 			method.insertBefore(patch.codeToInject);
@@ -92,5 +94,39 @@ public class FilePatcher {
 
 		byte[] modifiedClass = clazz.toBytecode();
 		return modifiedClass;
+	}
+
+	private CtMethod findMethod(CtClass clazz, Patch patch) throws Exception {
+		// Used for finding the method. Ignores if the method is overloaded.
+		if (patch.methodParameters == null) {
+			return clazz.getDeclaredMethod(patch.methodToPatch);
+		}
+
+		// Used when method is overloaded. Searches through method parameters.
+		Collection<CtMethod> methods = new ArrayList<>();
+		for (CtMethod method : clazz.getDeclaredMethods()) {
+			if (method.getName().equals(patch.methodToPatch)) {
+				methods.add(method);
+			}
+		}
+
+		for (CtMethod method : methods) {
+			CtClass[] paramTypes = method.getParameterTypes();
+			if (!isRightMethod(paramTypes, patch.methodParameters)) {
+				continue;
+			}
+			return method;
+		}
+
+		throw new NotFoundException("Cannot find right method.");
+	}
+
+	private boolean isRightMethod(CtClass[] paramTypes, String[] methodParameters) {
+		for (int i = 0; i < paramTypes.length; ++i) {
+			if (!methodParameters[i].equals(paramTypes[i].getName())) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

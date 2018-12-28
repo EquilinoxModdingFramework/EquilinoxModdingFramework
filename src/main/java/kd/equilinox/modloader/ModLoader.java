@@ -151,11 +151,11 @@ public class ModLoader implements IModLoader {
 		}
 	}
 
-	public void runPostLoadSession() {
+	public void runPostLoadSession(Object session) {
 		Logger.info("Entering PostLoadSession stage...");
 		for (IMod mod : this.mods) {
 			Logger.info("Loading mod: " + mod.getModName());
-			PostLoadSessionEvent event = new PostLoadSessionEvent();
+			PostLoadSessionEvent event = new PostLoadSessionEvent(session);
 			mod.postLoadSession(event);
 		}
 	}

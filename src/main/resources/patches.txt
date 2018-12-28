@@ -2,11 +2,12 @@
 // Patches should be as small as possible and should mainly execute some external code.
 
 // Template for patch:
-// # class | method | A - After / B - Before | code 
+// # class | method | A - After / B - Before | code | parameter-types
 // After - include the code at the end of the method (after all the method body)
-// Before - include the code at the start fo the method (before the actual method body)
+// Before - include the code at the start of the method (before the actual method body)
+// Parameter-types - this is an optional parameter which will force patching-module to check for the method where parameters are equal to the specified ones
 
 
-# main/MainApp.class | main | B | { kd.equilinox.modloader.ModLoader.INSTANCE.runInitialization(); }
-# gameManaging/GameManager.class | init | A | { kd.equilinox.modloader.ModLoader.INSTANCE.runPostInitialization(); }
-# session/SessionManager.class | setSession | A | { kd.equilinox.modloader.ModLoader.INSTANCE.runPostLoadSession(); }
+# main/MainApp.class | main | B |{ kd.equilinox.modloader.ModLoader.INSTANCE.runInitialization(); }
+# gameManaging/GameManager.class | init | A |{ kd.equilinox.modloader.ModLoader.INSTANCE.runPostInitialization(); }
+# session/Session.class | loadSession | A |{ kd.equilinox.modloader.ModLoader.INSTANCE.runPostLoadSession($1); } | session.Session

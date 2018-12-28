@@ -9,3 +9,4 @@
 
 # main/MainApp.class | main | B | { kd.equilinox.modloader.ModLoader.INSTANCE.runInitialization(); }
 # gameManaging/GameManager.class | init | A | { kd.equilinox.modloader.ModLoader.INSTANCE.runPostInitialization(); }
+# session/SessionManager.class | loadSaveSlot | A | { kd.equilinox.modloader.ModLoader.INSTANCE.runPostLoadSession(); }

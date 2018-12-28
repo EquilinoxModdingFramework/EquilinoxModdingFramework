@@ -16,9 +16,10 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import kd.equilinox.events.InitializationEvent;
-import kd.equilinox.events.PostInitializationEvent;
-import kd.equilinox.events.PreInitializationEvent;
+import kd.equilinox.events.inits.InitializationEvent;
+import kd.equilinox.events.inits.PostInitializationEvent;
+import kd.equilinox.events.inits.PreInitializationEvent;
+import kd.equilinox.events.sessions.PostLoadSessionEvent;
 import kd.equilinox.mods.IMod;
 import kd.equilinox.utils.FileUtils;
 import kd.equilinox.utils.Logger;
@@ -124,7 +125,7 @@ public class ModLoader implements IModLoader {
 	}
 
 	public void runPreInitialization() {
-		Logger.info("Entering preinitialization stage...");
+		Logger.info("Entering PreInitialization stage...");
 		for (IMod mod : this.mods) {
 			Logger.info("Loading mod: " + mod.getModName());
 			PreInitializationEvent event = new PreInitializationEvent();
@@ -133,7 +134,7 @@ public class ModLoader implements IModLoader {
 	}
 
 	public void runInitialization() {
-		Logger.info("Entering initialization stage...");
+		Logger.info("Entering Initialization stage...");
 		for (IMod mod : this.mods) {
 			Logger.info("Loading mod: " + mod.getModName());
 			InitializationEvent event = new InitializationEvent();
@@ -142,11 +143,20 @@ public class ModLoader implements IModLoader {
 	}
 
 	public void runPostInitialization() {
-		Logger.info("Entering postinitialization stage...");
+		Logger.info("Entering PostInitialization stage...");
 		for (IMod mod : this.mods) {
 			Logger.info("Loading mod: " + mod.getModName());
 			PostInitializationEvent event = new PostInitializationEvent();
 			mod.postInit(event);
+		}
+	}
+
+	public void runPostLoadSession() {
+		Logger.info("Entering PostLoadSession stage...");
+		for (IMod mod : this.mods) {
+			Logger.info("Loading mod: " + mod.getModName());
+			PostLoadSessionEvent event = new PostLoadSessionEvent();
+			mod.postLoadSession(event);
 		}
 	}
 

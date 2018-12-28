@@ -1,8 +1,9 @@
 package kd.equilinox.mods;
 
-import kd.equilinox.events.InitializationEvent;
-import kd.equilinox.events.PostInitializationEvent;
-import kd.equilinox.events.PreInitializationEvent;
+import kd.equilinox.events.inits.InitializationEvent;
+import kd.equilinox.events.inits.PostInitializationEvent;
+import kd.equilinox.events.inits.PreInitializationEvent;
+import kd.equilinox.events.sessions.PostLoadSessionEvent;
 import kd.equilinox.modloader.ModLoader;
 
 /**
@@ -14,9 +15,15 @@ import kd.equilinox.modloader.ModLoader;
 public interface IMod {
 	public String getModName();
 
-	public void preInit(PreInitializationEvent event);
+	default void preInit(PreInitializationEvent event) {
+	}
 
-	public void init(InitializationEvent event);
+	default void init(InitializationEvent event) {
+	}
 
-	public void postInit(PostInitializationEvent event);
+	default void postInit(PostInitializationEvent event) {
+	}
+
+	default void postLoadSession(PostLoadSessionEvent event) {
+	}
 }

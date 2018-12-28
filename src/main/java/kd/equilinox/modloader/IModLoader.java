@@ -18,4 +18,6 @@ public interface IModLoader {
 	public void runInitialization();
 
 	public void runPostInitialization();
+	
+	public void runPostLoadSession();
 }

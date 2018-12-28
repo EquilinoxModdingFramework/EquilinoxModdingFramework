@@ -1,4 +1,6 @@
-package kd.equilinox.events;
+package kd.equilinox.events.inits;
+
+import kd.equilinox.events.Event;
 
 /**
  * Event which is fired after the all Equilinox initialization.
